@@ -13,7 +13,11 @@ const routes = express.Router();
  */
 
 // Login
-routes.post('/sessions', SessionController.create);
+routes.post('/sessions', celebrate({
+    [Segments.BODY]: Joi.object().keys({
+        id: Joi.string().required().length(8)
+    })
+}), SessionController.create);
 
 // Ongs
 routes.get('/ongs', OngController.index);
@@ -33,7 +37,13 @@ routes.get('/incidents', celebrate({
         page: Joi.number(),
     })
 }), IncidentController.index);
-routes.post('/incidents', IncidentController.create);
+routes.post('/incidents', celebrate({
+    [Segments.BODY]: Joi.object().keys({
+        title: Joi.string().required(),
+        description: Joi.string().required().max(1000),
+        value: Joi.string().required().min(1).max(9999),
+    })
+}), IncidentController.create);
 routes.delete('/incidents/:id', celebrate({
     [Segments.PARAMS]: Joi.object().keys({
         id: Joi.number().required()
